@@ -1,0 +1,33 @@
+services:
+  app:
+    image: shinshark/crud-fiber:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - CLICKHOUSE_HOST=clickhouse
+      - CLICKHOUSE_PORT=9000
+      - CLICKHOUSE_DATABASE=default
+      - CLICKHOUSE_USERNAME=myuser
+      - CLICKHOUSE_PASSWORD=mypassword
+    depends_on:
+      - clickhouse
+
+  clickhouse:
+    image: shinshark/clickhouse-custom:latest
+    # for development, open port externally, for prod no need to list ports (so they 
+    # will only be accessible to other containers), for documentation purposes, can use expose: keyword
+    # for example:
+    # expose:
+    #  - "9000"  # Only available to other containers on the same network
+    ports:
+      - "9000:9000" # Native TCP interface
+      - "8123:8123" # HTTP interface (optional)
+    environment:
+      - CLICKHOUSE_USER=myuser
+      - CLICKHOUSE_PASSWORD=mypassword
+      - CLICKHOUSE_DB=default
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+
+volumes:
+  clickhouse_data:
